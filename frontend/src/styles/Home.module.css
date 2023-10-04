@@ -1,6 +1,5 @@
-.loginpage{
+.bodyLogin{
   background-color: rgb(7, 0, 134);
-  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,13 +7,7 @@
   height: 100vh;
 }
 
-.pageconteo{
-  background-color: rgb(255, 255, 255);
-  padding: 20px;
-  height: 100vh;
-}
-
-.frmlogin{
+.bodyLogin .frmlogin{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,27 +20,26 @@
   max-height: 400px;
 }
 
-.frmlogin h1{
+.bodyLogin .frmlogin h1{
   color: rgb(0, 0, 0);
   font-size: 50px;
   margin-bottom: 10px;
   text-align: center;
 }
 
-
-.frmlogin .inputText{
+.bodyLogin .frmlogin .inputText{
   margin-bottom: 20px;
   width: 60%;
   height: 50px
 }
 
-.frmlogin .inputPass{
+.bodyLogin .frmlogin .inputPass{
   margin-bottom: 20px;
   width: 60%;
   height: 50px
 }
 
-.frmlogin .buttonlog{
+.bodyLogin .frmlogin .buttonlog{
   width: 45%;
   height: 60px;
   font-size: 25px;
@@ -55,157 +47,8 @@
   background-color: rgb(7, 0, 134);
 }
 
-.frmlogin .buttonlog:hover{
+.bodyLogin .frmlogin .buttonlog:hover{
   background-color: rgb(0, 0, 187);
-}
-
-.bodyusers{
-  background-color: white;
-  padding: 20px;
-  display: flex;
-  height: 100vh;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.bodyusers h2{
-  color: black;
-}
-
-.bodyusers h3{
-  color: black;
-}
-
-.bodyusers .contenedor{
-  text-align: center;
-  width: 100%;
-  max-width: 500px;
-  background-color: antiquewhite;
-}
-
-.dlgnovedad{
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.dlgnovedad .slcs{
-  margin-bottom: 10px;
-}
-
-.dlgnovedad .txtarea{
-  margin-bottom: 10px;
-}
-
-.dlgnovedad .texfile{
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-
-/* CSS para el sidebar */
-.contenedorglobal{
-  display: flex;
-  min-height: 100vh;
-  background-color: #ffffff;
-}
-
-.navbarpages{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #333333;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.usernavbar{
-  font-weight: bold;
-  margin-left: 15px;
-  font-size: 20px;
-}
-
-.newsidebar{
-  width: 200px;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  background-color: #000e38;
-}
-
-.contendorlogoside{
-  border-bottom: 1px solid white;
-}
-
-.contendorlogoside img{
-  width: 100%;
-  height: 100px;
-  padding: 10px;
-}
-
-.MenuOpt{
-  max-height: calc(100vh - 100px); 
-  overflow-y:auto
-}
-
-.option {
-  padding: 10px;
-  color: white;
-  text-decoration: none;
-  display: flex;
-  align-items: center; 
-}
-
-.option:hover {
-  background-color: #002eb9;
-}
-
-.option.selected {
-  border-left: 10px solid white;
-  border-bottom: 3px solid white;
-  background-color: #031e72;
-  border-radius: 0.25rem;
-}
-
-.iconsidebar{
-  display: flex; 
-  color: white;
-  padding-top: 1rem;
-  padding-bottom: 1rem; 
-  padding-left: 0.75rem; 
-  padding-right: 0.75rem; 
-  align-items: center;
-}
-
-.contenedorsecun{
-  margin-left: 200px;  
-  position: fixed;
-  width: calc(100% - 200px);
-}
-
-.contenedorveedor{
-  position: fixed;
-  width: 100%;
-}
-
-.contenedorpages{
-  padding: 10px;
-  overflow-y: auto;
-  display: flex;
-  height: 100vh;
-  flex-direction: column;
-  padding-bottom: 100px;
-}
-
-.btncsession{
-  background-color:rgb(5, 1, 82);
-  border: rgb(5, 1, 82);  
-  margin-left: auto;
-  margin-right: 20px;
-  font-size: 20px;
-  width: 200px;
 }
 
 .registros{
@@ -213,37 +56,6 @@
   flex-direction: column;
 }
 
-.filesinp{
+.registros input[type='file']{
   margin-bottom: 10px;
-}
-
-.registros input[type='text']{
-  margin-bottom: 10px;
-}
-
-.registros input[type='password']{
-  margin-bottom: 10px;
-}
-
-.registros input[type='email']{
-  margin-bottom: 10px;
-}
-
-.drpdown{
-  margin-bottom: 10px;
-}
-
-.headerstable{
-  margin: 15px;
-}
-
-.headerstable h2{
-  font-size: 20px;
-  margin-bottom: 10px;
-}
-
-.headerstable button{
-  width: 200px;
-  margin-bottom: 15px;
-  font-size: 20px;
 }

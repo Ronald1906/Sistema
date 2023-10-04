@@ -19,7 +19,7 @@ app.use(bodyParser.json({limit: "50mb", extended: true}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true}))
 
 app.use(cors({
-  origin:[process.env.IPFRONT], //Direccion de origen de donde provienen las peticiones
+  origin:['http://localhost:7000'], //Direccion de origen de donde provienen las peticiones
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -46,7 +46,8 @@ const verifyTokenMiddleware = (req, res, next) => {
 module.exports = verifyTokenMiddleware
 
 //Creamos las rutas para los controladores
-
+const controladorRouter= require('./Controller/Controladores')
+app.use('/controller', controladorRouter)
 
 //Verificamos si existe conexion a la base de datos e inicializamos el server
 pool.connect((error, client, release) => {
