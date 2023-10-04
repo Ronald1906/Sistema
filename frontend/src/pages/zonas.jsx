@@ -16,7 +16,6 @@ const zonas = () => {
 
   const consulta=(()=>{
     axios.get(process.env.NEXT_PUBLIC_BACKEND+'controller/zonas').then((result)=>{
-      console.log(result.data)
       setDatos(result.data)
     })
   })
@@ -91,6 +90,7 @@ const zonas = () => {
       datos: InpFile
     }).then((result)=>{
       CDlgAddZ()
+      consulta()
       Swal.fire({
         title: result.data.title,
         icon: result.data.icon,
@@ -112,8 +112,8 @@ const zonas = () => {
       </DataTable>
       <Dialog visible={DlgAddZ} onHide={CDlgAddZ} header='REGISTRO DE ZONAS' >
         <form className={styles.registros} onSubmit={RegistrarZonas} > 
-          <InputText type='file' className={styles.filesinp} onChange={(e)=>handleFile(e)} />
-          <Button label='Registrar' />
+          <InputText type='file' onChange={(e)=>handleFile(e)} />
+          <Button label='Registra' />
         </form>
       </Dialog>
     </div>

@@ -59,3 +59,7 @@
 .registros input[type='file']{
   margin-bottom: 10px;
 }
+
+.registros input{
+  margin-bottom: 10px;
+}
