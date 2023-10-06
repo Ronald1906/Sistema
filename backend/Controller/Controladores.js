@@ -81,7 +81,7 @@ router.post('/add_admin', async(req,res)=>{
 })
 
 //Metodo para agregar los supervisores
-router.post('/add_supervisor', async(req,res)=>{
+router.post('/add_supervisor', verifyTokenMiddleware, async(req,res)=>{
     try {
         const datos= req.body
         const pwd= await bcryptjs.hash(datos.cedula, 10)
@@ -184,7 +184,7 @@ router.post('/add_supervisor', async(req,res)=>{
 })
 
 //Metodo para agregar las zonas
-router.post('/add_zona', async(req,res)=>{
+router.post('/add_zona',verifyTokenMiddleware, async(req,res)=>{
     try {
         const datos= req.body.datos
 
@@ -211,7 +211,7 @@ router.post('/add_zona', async(req,res)=>{
 })
 
 //Metodo para visualizar las zonas
-router.get('/zonas', async(req,res)=>{
+router.get('/zonas', verifyTokenMiddleware, async(req,res)=>{
     try {
         await conexion.query("SELECT * FROM tbl_zonas").then((result)=>{
             let arrayF=[]
@@ -234,7 +234,7 @@ router.get('/zonas', async(req,res)=>{
 })
 
 //Metodo para visualizar todas las zonas para asignar a los usuarios
-router.get('/zonas_user', async(req,res)=>{
+router.get('/zonas_user', verifyTokenMiddleware, async(req,res)=>{
     try {
         await conexion.query("SELECT * FROM tbl_zonas").then((result)=>{
             res.send(result.rows)
@@ -245,7 +245,7 @@ router.get('/zonas_user', async(req,res)=>{
 })
 
 //Metodo para visualizar todos los usuarios
-router.get('/usuarios', async(req,res)=>{
+router.get('/usuarios', verifyTokenMiddleware, async(req,res)=>{
     try {
         //Creamos la consulta
         const consulta1_string= "SELECT * FROM tbl_usuarios WHERE rol = $1"
@@ -337,6 +337,16 @@ router.get('/login', verifyTokenMiddleware, async(req,res)=>{
     }
 })
 
+//Ruta oara visualizar los candidatos
+router.get('/candidatos', verifyTokenMiddleware, async(req,res)=>{
+    try {
+        await conexion.query("SELECT * FROM tbl_candidatos").then((result)=>{
+            res.send(result.rows)
+        })
+    } catch (error) {
+        console.log('Error en Controladores en el metodo get /candidatos: '+ error)
+    }
+})
 
 
 module.exports = router

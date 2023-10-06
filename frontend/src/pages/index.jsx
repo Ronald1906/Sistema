@@ -18,7 +18,7 @@ const Index = () => {
       }
     }).then((result)=>{     
       if(result.data.auth === true){
-        router.push('/validacion')
+        router.push('/dashboard')
       }
     })
   },[])

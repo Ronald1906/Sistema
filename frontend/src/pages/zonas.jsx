@@ -8,6 +8,7 @@ import * as XLSX from 'xlsx'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import { Column } from 'primereact/column'
+import Sidebar from './components/Sidebar'
 
 const zonas = () => {
   const [DlgAddZ, setDlgAddZ]= useState(false)
@@ -15,7 +16,12 @@ const zonas = () => {
   const [Datos, setDatos]= useState([])
 
   const consulta=(()=>{
-    axios.get(process.env.NEXT_PUBLIC_BACKEND+'controller/zonas').then((result)=>{
+    let token= localStorage.getItem('token_eleccion_2023_app')
+    axios.get(process.env.NEXT_PUBLIC_BACKEND+'controller/zonas',{
+      headers:{
+        token_eleccion_2023_app: token
+      }
+    }).then((result)=>{
       setDatos(result.data)
     })
   })
@@ -101,7 +107,7 @@ const zonas = () => {
 
 
   return (
-    <div>
+    <Sidebar>
       <DataTable header={HeaderTable} value={Datos} paginator 
       stripedRows rows={10} >
         <Column field='zona' header='ZONA' />
@@ -116,7 +122,7 @@ const zonas = () => {
           <Button label='Registra' />
         </form>
       </Dialog>
-    </div>
+    </Sidebar>
   )
 }
 

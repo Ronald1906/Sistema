@@ -3,7 +3,7 @@ import styles from '@/styles/Home.module.css'
 import Navbar from './Navbar'
 import axios from 'axios'
 import Sidemenu from './Sidemenu'
-import {FaUser, FaClipboardList, FaHome, FaThList} from 'react-icons/fa'
+import {FaUser, FaClipboardList, FaHome, FaThList, FaUsers} from 'react-icons/fa'
 import { useRouter } from 'next/router'
 
 const Sidebar = ({children}) => {
@@ -34,14 +34,13 @@ const Sidebar = ({children}) => {
         token_eleccion_2023_app: localStorage.getItem('token_eleccion_2023_app')
       }
     }).then((result)=>{
-      console.log(result.data)
       //Si el rol es el de administrador
       if(result.data.token.data.id_rol === 'admin'){
         setMenuArray([
           {id: 1, label:'Dashboard', icon: FaHome, link:'/dashboard'},
           {id: 2, label:'Usuarios', icon: FaUser, link:'/usuarios'},
           {id: 3, label:'Zonas', icon: FaClipboardList, link:'/zonas'},
-          {id: 4, label:'Candidatos', icon: FaThList, link:'/candidatos'},
+          {id: 4, label:'Candidatos', icon: FaUsers, link:'/candidatos'},
           {id: 5, label:'Reporte', icon: FaThList, link:'/reporte'},
           {id: 6, label:'Votos', icon: FaThList, link:'/votacion'},
           //{id: 5, label:'Revisión', icon: FaThList, link:'/revision_sufragio'},
@@ -60,7 +59,7 @@ const Sidebar = ({children}) => {
     <div className={styles.contenedorglobal}>
       <div className={styles.newsidebar} >
         <div style={{borderBottom:'1px solid white', padding:'15px', textAlign:'center'}}>
-          <h2>CONTROL ELECTORAL</h2>
+          <h2 style={{color:'white'}}>CONTROL ELECTORAL</h2>
         </div> 
         <Sidemenu valor={{menu:MenuArray}} />
       </div>

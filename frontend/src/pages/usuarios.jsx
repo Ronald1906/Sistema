@@ -43,7 +43,12 @@ const Usuarios = () => {
   })
 
   useEffect(()=>{
-    axios.get(process.env.NEXT_PUBLIC_BACKEND+'controller/zonas_user').then((result)=>{
+    let token= localStorage.getItem('token_eleccion_2023_app')
+    axios.get(process.env.NEXT_PUBLIC_BACKEND+'controller/zonas_user',{
+      headers:{
+        token_eleccion_2023_app: token
+      }
+    }).then((result)=>{
       setDrpZonas(result.data)
     })
     consulta()
@@ -51,10 +56,15 @@ const Usuarios = () => {
 
   const Registrar=(e)=>{
     e.preventDefault()
+    let token= localStorage.getItem('token_eleccion_2023_app')
     axios.post(process.env.NEXT_PUBLIC_BACKEND+'controller/add_supervisor',{
       cedula: InpCedula,
       nombres: InpNombres,
       juntas: SlcZonas
+    },{
+      headers:{
+        token_eleccion_2023_app: token
+      }
     }).then((result)=>{
       if(result.data.icon=='warning'){
         setDlgAddUser(false)

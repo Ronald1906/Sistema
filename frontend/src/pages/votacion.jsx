@@ -2,6 +2,7 @@ import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import React, { useState } from 'react'
+import Sidebar from './components/Sidebar'
 
 const Votacion = () => {
   
@@ -17,7 +18,7 @@ const Votacion = () => {
   }
 
   return (
-    <div>
+    <Sidebar>
       <DataTable value={Datos} paginator 
       stripedRows rows={10} >
         <Column field=''  header='ZONA' alignHeader='center' />
@@ -26,7 +27,7 @@ const Votacion = () => {
         <Column field=''  header='ESTADO' alignHeader='center' />
         <Column body={BtnRevision} header='Revision' align='center' exportable={false} style={{minWidth: '8rem' }} />             
       </DataTable>
-    </div>
+    </Sidebar>
   )
 }
 
