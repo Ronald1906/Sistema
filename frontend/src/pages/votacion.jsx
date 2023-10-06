@@ -18,7 +18,8 @@ const Votacion = () => {
 
   return (
     <div>
-      <DataTable value={Datos} >
+      <DataTable value={Datos} paginator 
+      stripedRows rows={10} >
         <Column field=''  header='ZONA' alignHeader='center' />
         <Column field=''  header='PARROQUIA' alignHeader='center' />
         <Column field=''  header='JUNTA' alignHeader='center' />

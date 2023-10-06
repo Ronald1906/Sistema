@@ -63,3 +63,106 @@
 .registros input{
   margin-bottom: 10px;
 }
+
+/*  CSS PARA EL SIDEBAR */
+
+.contenedorglobal{
+  display: flex;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.navbarpages{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333333;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.usernavbar{
+  font-weight: bold;
+  margin-left: 15px;
+  font-size: 20px;
+}
+
+.newsidebar{
+  width: 200px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #000e38;
+}
+
+.contendorlogoside{
+  border-bottom: 1px solid white;
+}
+
+.contendorlogoside img{
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+}
+
+.MenuOpt{
+  max-height: calc(100vh - 100px); 
+  overflow-y:auto
+}
+
+.option {
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center; 
+}
+
+.option:hover {
+  background-color: #002eb9;
+}
+
+.option.selected {
+  border-left: 10px solid white;
+  border-bottom: 3px solid white;
+  background-color: #031e72;
+  border-radius: 0.25rem;
+}
+
+.iconsidebar{
+  display: flex; 
+  color: white;
+  padding-top: 1rem;
+  padding-bottom: 1rem; 
+  padding-left: 0.75rem; 
+  padding-right: 0.75rem; 
+  align-items: center;
+}
+
+.contenedorsecun{
+  margin-left: 200px;  
+  position: fixed;
+  width: calc(100% - 200px);
+}
+
+.contenedorveedor{
+  position: fixed;
+  width: 100%;
+}
+
+.contenedorpages{
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  padding-bottom: 100px;
+}
+
+.btncsession{
+  background-color:rgb(5, 1, 82);
+  border: rgb(5, 1, 82);  
+  margin-left: auto;
+  margin-right: 20px;
+}

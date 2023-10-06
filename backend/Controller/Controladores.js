@@ -3,6 +3,7 @@ const router = express.Router();
 const conexion = require('../Database/database');
 const verifyTokenMiddleware= require('../index')
 const bcryptjs= require('bcryptjs')
+const jwt= require('jsonwebtoken')
 
 //Metodo para agregar el usuario administrador
 router.post('/add_admin', async(req,res)=>{
@@ -33,7 +34,10 @@ router.post('/add_admin', async(req,res)=>{
                         arrayF.push({
                             zona: consulta2.rows[i].zona,
                             parroquia: consulta2.rows[i].parroquia[j].parroquia,
-                            junta: k+'F'
+                            junta: k+'F',
+                            estado: 'PENDIENTE',
+                            jpg_instalacion: '',
+                            jpg_votos: '',
                         })
                     }
 
@@ -41,7 +45,10 @@ router.post('/add_admin', async(req,res)=>{
                         arrayF.push({
                             zona: consulta2.rows[i].zona,
                             parroquia: consulta2.rows[i].parroquia[j].parroquia,
-                            junta: k+'M'
+                            junta: k+'M',
+                            estado: 'PENDIENTE',
+                            jpg_instalacion: '',
+                            jpg_votos: '',
                         })
                     }
 
@@ -97,20 +104,30 @@ router.post('/add_supervisor', async(req,res)=>{
             //Consultamos si las juntas ya estan siendo empleadas por otro usuario
             //Creamos una variable en 0 que me servirada de referencia para saber si tiene una junta ya en uso
             let usados=[]
-            //Recorremos las juntas enviadas
-            for(let i=0; i<datos.juntas.length; i++){
-                //Creamos la consulta
-                const consulta2 = 'SELECT * FROM tbl_usuarios WHERE EXISTS (SELECT 1 FROM jsonb_array_elements(juntas) AS junta WHERE junta->>"zona" = $1)';
-                
-                //Ejecutamos la consulta
-                let zonaParametro = { zona:datos.juntas[i].zona };
-                const eje_consulta2= await conexion.query(consulta2,[datos.juntas[i].zona])
-                
-                if(eje_consulta2.rowCount>0){
-                    usados.push(datos.juntas[i].zona)
+
+            const consultastring= "SELECT * FROM tbl_usuarios WHERE rol = $1"
+
+            //Creamos la consulta
+            const consulta2= await conexion.query(consultastring,['supervisor'])
+
+            //Recorremos los datos con un ciclo for
+            for(let i=0; i<consulta2.rowCount; i++){
+                //Recorremos los datos de las juntas que se desean asignar 
+                for(let j=0; j<datos.juntas.length; j++){
+                    //Filtramos en el array juntas de cada usuario para saber si no contiene la zona a ingresar
+                    let filtro_junta= consulta2.rows[i].juntas.filter((e)=>e.zona == datos.juntas[j].zona)
+                    //Si existe, se agrega al array usados
+                    if(filtro_junta.length>0){
+                        //Verificamos si esa zona esta ya registrada en el array
+                        let filtro_usados= usados.filter((e)=>e == datos.juntas[j].zona)
+                        if(filtro_usados.length == 0){
+                            usados.push(datos.juntas[j].zona)
+                        }
+                    }
                 }
             }
 
+            //Verificamos si existen zonas ya en uso
             if(usados.length>0){
                 res.send({
                     title: '¡Advertencia!',
@@ -118,17 +135,32 @@ router.post('/add_supervisor', async(req,res)=>{
                     text: 'Por favor excluir las siguientes zonas: '+ usados.toString()
                 })
             }else{
+                //Si no existen zonas ya en uso 
                 let arrayF=[]
                 //Recorremos los datos para agregar las juntas
                 for(let i=0; i<datos.juntas.length; i++){
                     for(let j=0; j<datos.juntas[i].parroquia.length; j++){
-                        arrayF.push({
-                            zona: datos.juntas[i].zona,
-                            parroquia: datos.juntas[i].parroquia[j].parroquia,
-                            juntas_fem: datos.juntas[i].parroquia[j].juntas_fem,
-                            juntas_mas: datos.juntas[i].parroquia[j].juntas_mas,
-                            total_juntas: datos.juntas[i].parroquia[j].total_juntas,
-                        })
+                        for(let k=1; k<=datos.juntas[i].parroquia[j].juntas_fem; k++){
+                            arrayF.push({
+                                zona: datos.juntas[i].zona,
+                                parroquia: datos.juntas[i].parroquia[j].parroquia,
+                                estado: 'PENDIENTE',
+                                jpg_instalacion: '',
+                                jpg_votos: '',
+                                junta: k+'F'
+                            })
+                        }
+    
+                        for(let k=1; k<=datos.juntas[i].parroquia[j].juntas_mas; k++){
+                            arrayF.push({
+                                zona: datos.juntas[i].zona,
+                                parroquia: datos.juntas[i].parroquia[j].parroquia,
+                                estado: 'PENDIENTE',
+                                jpg_instalacion: '',
+                                jpg_votos: '',
+                                junta: k+'M'
+                            })
+                        }
                     }
                 }
 
@@ -142,17 +174,10 @@ router.post('/add_supervisor', async(req,res)=>{
                             icon:'success',
                             text: 'Usuario Registrado'
                         })
-                    }else{
-                        console.log(result.rows)
                     }
-                })
-                
+                })                
             }
-            
         }
-
-
-
     } catch (error) {
         console.log('Error en Controladores en el metodo post /add_supervisor: '+ error)
     }
@@ -219,16 +244,99 @@ router.get('/zonas_user', async(req,res)=>{
     }
 })
 
-//Metodo para revisar los usuarios
+//Metodo para visualizar todos los usuarios
 router.get('/usuarios', async(req,res)=>{
     try {
-        await conexion.query("SELECT * FROM tbl_usuarios").then((result)=>{
-            res.send(result.rows)
-        })
+        //Creamos la consulta
+        const consulta1_string= "SELECT * FROM tbl_usuarios WHERE rol = $1"
+        //Generamos la consulta
+        const consulta1= await conexion.query(consulta1_string, ['supervisor'])
+
+        //Creamos un array que almacenara todos los datos
+        let array1=[]
+
+        //Recorremos los usuarios obtenidos
+        for(let i=0; i< consulta1.rowCount; i++){
+            const nombresDeZona = [...new Set(consulta1.rows[i].juntas.map(item => item.zona))];
+            array1.push({
+                cedula: consulta1.rows[i].cedula,
+                nombres:  consulta1.rows[i].nombres,
+                usuario: consulta1.rows[i].usuario,
+                zonas: nombresDeZona.toString(),
+                juntas: consulta1.rows[i].juntas
+            })
+        }
+
+        res.send(array1)
+
     } catch (error) {
-        console.log('Error en Contoladores en el metodo get /usuarios: '+ error)
+        console.log('Error en Controladores en el metodo get /usuarios: '+ error)
     }
 })
+
+//Metodo para el login al sistema
+router.post('/login', async(req,res)=>{
+    try {
+        const datos= req.body
+
+        //Creamos la consulta del usuario
+        const con1_string= "SELECT * FROM tbl_usuarios WHERE usuario = $1"
+        
+        //Ejecutamos la consulta
+        const consulta1= await conexion.query(con1_string, [datos.usuario])
+        if(consulta1.rowCount>0){
+            //Verificamos si la contraseña enviada es correcta
+            const verificar= await bcryptjs.compare(datos.passw, consulta1.rows[0].passwords)
+
+            //Hacemos una comparacion
+            if(consulta1.rows[0].usuario == datos.usuario && verificar == true){
+                
+                const expiracion = Math.floor(Date.now() / 1000) + (60 * 60 * 24); // 12 horas de expiración
+
+                let objeto={
+                    users: consulta1.rows[0].usuario,
+                    id_rol: consulta1.rows[0].rol,
+                }
+
+                const token= jwt.sign({
+                    exp: expiracion,
+                    data:objeto
+                },process.env.CLVSECRET)
+
+                res.send({token: token, auth: true, expiracion: expiracion})
+
+            }else{
+                res.send({
+                    title: '¡Advertencia!',
+                    icon: 'warning',
+                    text: 'El usuario y/o contraseña incorrectos',
+                    auth: false
+                })
+            }
+
+        }else{
+            res.send({
+                title:'¡Error!',
+                icon: 'error',
+                text: '¡El usuario ingresado no existe!',
+                auth: false
+            })
+        }
+        
+    } catch (error) {
+        console.log('Error en Controladores en el metodo post: /login: '+ error)
+    }
+})
+
+//Ruta para obtener el usuario logueado
+router.get('/login', verifyTokenMiddleware, async(req,res)=>{
+    try {
+        res.send({token: req.valtoken, auth: true})
+    } catch (error) {
+        console.log('Error en UserController en el metodo get /login: '+ error)
+    }
+})
+
 
 
 module.exports = router
