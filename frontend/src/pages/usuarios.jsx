@@ -37,7 +37,12 @@ const Usuarios = () => {
   })
 
   const consulta=(()=>{
-    axios.get(process.env.NEXT_PUBLIC_BACKEND+'controller/usuarios').then((result)=>{
+    let token= localStorage.getItem('token_eleccion_2023_app')
+    axios.get(process.env.NEXT_PUBLIC_BACKEND+'controller/usuarios',{
+      headers:{
+        token_eleccion_2023_app: token
+      }
+    }).then((result)=>{
       setDatos(result.data)
     })
   })

@@ -4,6 +4,18 @@ const conexion = require('../Database/database');
 const verifyTokenMiddleware= require('../index')
 const bcryptjs= require('bcryptjs')
 const jwt= require('jsonwebtoken')
+const multer = require('multer');
+
+// Configuración de multer para manejar la carga de archivos de la votacion
+const storage = multer.diskStorage({
+    destination: 'public/sufragio/', // Directorio donde se guardarán los archivos
+    filename: (req, file, cb) => {            
+      cb(null, file.originalname);
+    },
+});
+
+//Metodo para que se realice la subida de los archivos con multer
+const upload = multer({ storage: storage });
 
 //Metodo para agregar el usuario administrador
 router.post('/add_admin', async(req,res)=>{
@@ -103,7 +115,7 @@ router.post('/add_supervisor', verifyTokenMiddleware, async(req,res)=>{
         }else{
             //Consultamos si las juntas ya estan siendo empleadas por otro usuario
             //Creamos una variable en 0 que me servirada de referencia para saber si tiene una junta ya en uso
-            let usados=[]
+            /*let usados=[]
 
             const consultastring= "SELECT * FROM tbl_usuarios WHERE rol = $1"
 
@@ -134,7 +146,7 @@ router.post('/add_supervisor', verifyTokenMiddleware, async(req,res)=>{
                     icon: 'warning',
                     text: 'Por favor excluir las siguientes zonas: '+ usados.toString()
                 })
-            }else{
+            }else{*/
                 //Si no existen zonas ya en uso 
                 let arrayF=[]
                 //Recorremos los datos para agregar las juntas
@@ -177,7 +189,7 @@ router.post('/add_supervisor', verifyTokenMiddleware, async(req,res)=>{
                     }
                 })                
             }
-        }
+        //}
     } catch (error) {
         console.log('Error en Controladores en el metodo post /add_supervisor: '+ error)
     }
@@ -337,7 +349,7 @@ router.get('/login', verifyTokenMiddleware, async(req,res)=>{
     }
 })
 
-//Ruta oara visualizar los candidatos
+//Ruta para visualizar los candidatos
 router.get('/candidatos', verifyTokenMiddleware, async(req,res)=>{
     try {
         await conexion.query("SELECT * FROM tbl_candidatos").then((result)=>{
@@ -348,5 +360,239 @@ router.get('/candidatos', verifyTokenMiddleware, async(req,res)=>{
     }
 })
 
+//Ruta para visualizar las juntas de cada usuario
+router.post('/zonas_user',verifyTokenMiddleware,async(req,res)=>{
+    try {
+        const datos= req.body
+        
+        //Creamos la consulta del usuario
+        let stringc1= "SELECT * FROM tbl_usuarios WHERE  usuario = $1"
+
+        await conexion.query(stringc1,[datos.users]).then((result)=>{
+            let array_zona= result.rows[0].juntas
+            
+            const nombresDeZona = [...new Set(array_zona.map(item => item.zona))];
+            res.send({zonas: nombresDeZona, juntas: array_zona})
+        })
+
+    } catch (error) {
+        console.log('Error en Controladores en el metodo post /zonas_user: '+ error)
+    }
+})
+
+//Ruta para visualizar los datos de cada votacion
+router.get('/realizar_acta', verifyTokenMiddleware, async(req,res)=>{
+    try {
+        await conexion.query("SELECT * FROM tbl_candidatos").then((result)=>{
+            let array=[]
+            array.push(
+                {nombre: 'TOTAL VOTOS', total:'', grupo: 'TOTAL VOTOS'},
+                {nombre:'VOTOS EN BLANCO', total:'', grupo: 'VOTOS EN BLANCO'},
+                {nombre: 'VOTOS NULOS', total:'', grupo: 'VOTOS NULOS'}
+            )
+
+            for(let i=0; i<result.rowCount; i++){
+                array.push({
+                    nombre: result.rows[i].candidato,
+                    total: '',
+                    grupo: result.rows[i].lista
+                })
+            }
+
+            res.send(array)
+        })
+    } catch (error) {
+        console.log('Error en Controladores en el metod get /realizar_acta: '+error)
+    }
+})
+
+//Ruta para guardar las juntas sufragadas
+router.post('/sufragar', verifyTokenMiddleware, async(req,res)=>{
+    try {
+        const datos= req.body
+        //Creamos la consulta para averiguar si no existe esta zona ya ingresada
+        const stringc1=  "SELECT * FROM tbl_votos WHERE zona = $1 AND parroquia = $2 AND junta = $3"
+
+        //Ejecutamos la consulta
+        const consulta1= await conexion.query(stringc1,[datos.junta.zona,datos.junta.parroquia, datos.junta.junta])
+
+        //Verificamos si se encuentran coincidencias
+        if(consulta1.rowCount>0){
+            //Se consulta todos los usuarios
+            let stringc5= "SELECT * FROM tbl_usuarios"
+
+            //Ejecutamos la consulta
+            const consulta5= await conexion.query(stringc5)
+
+            //Recorremos los usuarios
+            for(let i=0; i<consulta5.rowCount; i++){
+                //Obtenemos las juntas asignadas
+                let juntas= consulta5.rows[i].juntas
+                
+                //Filtramos las juntas con las que se estan intentando ingresar
+                let filtro= juntas.filter((e)=>e.zona == datos.junta.zona && e.parroquia == datos.junta.parroquia && e.junta == datos.junta.junta )
+
+                //Si encuentra una coincidencia
+                if(filtro.length >0){
+                    //Verificamos si el estado esta en REGISTRADO y si tiene la misma img_jpg
+                    if(filtro[0].estado != 'REGISTRADO' || filtro[0].jpg_votos != datos.img_name){
+
+                        let junta_encontrada= filtro[0]
+
+                        junta_encontrada.jpg_votos= datos.img_name
+                        junta_encontrada.estado= 'REGISTRADO'
+
+                        //Creamos la consulta para actualizar las juntas de los usuarios
+                        let stringc6= "UPDATE tbl_usuarios SET juntas = $1 WHERE  usuario = $2"
+
+                        //Ejecutamos la consulta de actualizacion
+                        await conexion.query(stringc6,[juntas, consulta5.rows[i].usuario])
+                    }
+                }
+            }
+
+            res.send({
+                title: '¡Registro Éxitoso!',
+                icon: 'success',
+                text: '¡Junta registrada!',
+            })
+
+        }else{
+            //Como no hay ningun registro se hace el ingreso de los datos
+            //Creamos la consulta para el ingreso de los datos
+
+            const valores= [datos.junta.zona, datos.junta.parroquia, datos.junta.junta, datos.img_name, datos.usuario, datos.votos]
+
+            let stringc2= "INSERT INTO tbl_votos (zona, parroquia, junta, img_jpg, usuario, votos) VALUES ($1, $2, $3, $4, $5, $6)"
+
+            //Ejecutamos la consulta
+            const consulta2= await conexion.query(stringc2, valores)
+            
+            //Hacemos la validacion para poder comenzar con la actualizacion de los demas usuarios que tengan esta junta
+            if(consulta2.rowCount>0){
+                //Creamos la consulta de todos los usuarios
+                const stringc3= "SELECT * FROM tbl_usuarios"
+
+                //Ejecutamos la consulta
+                const consulta3= await conexion.query(stringc3)
+                
+                //Recorremos los usuarios
+                for(let i=0; i<consulta3.rowCount; i++){
+                    //Obtenemos sus juntas
+                    let juntas= consulta3.rows[i].juntas
+
+                    //Realizamos un filtro para ver si no contienen la junta que deseo actualizar
+                    let filtro= juntas.filter((e)=>e.zona == datos.junta.zona && e.parroquia == datos.junta.parroquia && e.junta == datos.junta.junta)
+
+                    if(filtro.length>0){
+                        let junta_encontrada= filtro[0]
+
+                        junta_encontrada.jpg_votos= datos.img_name
+                        junta_encontrada.estado= 'REGISTRADO'
+
+
+                        //Creamos la consulta para actualizar las juntas de los usuarios
+                        let stringc4= "UPDATE tbl_usuarios SET juntas = $1 WHERE usuario = $2"
+
+                        //Ejecutamos la consulta de actualizacion
+                        await conexion.query(stringc4,[juntas, consulta3.rows[i].usuario])
+                    }
+                }
+
+                res.send({
+                    title: '¡Registro Éxitoso!',
+                    icon: 'success',
+                    text: '¡Junta registrada!',
+                })
+            }
+        }        
+    } catch (error) {
+        console.log('Error en Controladores en el metodo post /sufragar: '+ error)
+    }
+})
+
+router.post('/img_votacion',verifyTokenMiddleware, upload.single('file'), async(req,res)=>{
+    try {
+        res.send({
+            title: '¡Registro Exitoso!',
+            icon: 'success',
+            text: '¡Votos registrados!'
+        })
+    } catch (error) {
+        console.log('Error en UserController en el metodo post /foto_votos: '+ error)
+    }  
+})
+
+//Ruta para visualizar las juntas ya sufragadas
+router.get('/revision', verifyTokenMiddleware, async(req,res)=>{
+    try {
+        await conexion.query('SELECT * FROM tbl_votos').then((result)=>{
+            res.send(result.rows)
+        })
+    } catch (error) {
+        console.log('Error en Controladores en el metodo get /revision: '+ error)
+    }
+})
+
+//Ruta para ver el total de votos
+router.get('/total_votos', async(req,res)=>{
+    try {
+
+        let array_candidatos=[]
+
+        array_candidatos.push(
+            {candidato: 'VOTOS EN BLANCO', total: 0, porcentaje: 0},
+            {candidato: 'VOTOS NULOS', total: 0, porcentaje: 0},
+            {candidato: 'TOTAL VOTOS', total: 0, porcentaje: 0}
+        )
+
+        //Consultamos los candidatos
+        const consulta1= await conexion.query("SELECT * FROM tbl_candidatos")
+
+        //Recorremos la consulta
+        for(let i=0; i< consulta1.rowCount; i++){
+            array_candidatos.push({
+                candidato: consulta1.rows[i].candidato,
+                total: 0,
+                porcentaje: 0
+            })
+        }
+
+        //Consultamos los votos
+        const consulta2= await conexion.query("SELECT * FROM tbl_votos")
+
+        //Recorremos los votos
+        for(let i=0; i<consulta2.rowCount; i++){
+            //Obtenemos los votos de cada junta
+            let votos= consulta2.rows[i].votos
+            //Recorremos el array de candidatos
+            for(let j=0; j<array_candidatos.length; j++){
+                //Filtramos los candidatos acorde a los votos
+                let filtro= votos.filter((e)=>e.nombre == array_candidatos[j].candidato)
+                if (filtro) {
+                    array_candidatos[j].total += filtro[0].total;
+                }
+            }
+
+        }
+
+        //Filtramos el total votos
+        let filtro_total= array_candidatos.filter((e)=> e.candidato == 'TOTAL VOTOS')
+        
+        //Recorremos el array de array candidatos
+        for(let i=0; i<array_candidatos.length; i++){
+            array_candidatos[i].porcentaje = ((array_candidatos[i].total * 100)/filtro_total[0].total).toFixed(2)
+        }
+
+        //Excluimos el valor total con un filtro
+        let filtro_final= array_candidatos.filter((e)=> e.candidato != 'TOTAL VOTOS')
+
+        res.send(filtro_final)
+        
+
+    } catch (error) {
+        console.log('Error en Controladores en el metodo get /total_votos: '+ error)
+    }
+})
 
 module.exports = router

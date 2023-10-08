@@ -38,7 +38,7 @@ const Index = () => {
         })
       }else{
         localStorage.setItem('token_eleccion_2023_app',result.data.token)
-        router.push('/usuarios')
+        router.push('/dashboard')
       }
     })
   }

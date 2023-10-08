@@ -3,7 +3,7 @@ import {Bar, BarChart, Cell,CartesianGrid, ResponsiveContainer, Tooltip, XAxis, 
 
 const BarListas = ({ data }) => {
 
-  const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042','#3ba000','#006ba0','#d4c716','#9516d4', '#16bed4','#d48216','#a1d416','#1649d4'];  
+  const colors = ['#d4c716', '#d48216', '#9516d4', '#0088FE','#3ba000','#006ba0','#d4c716','#9516d4', '#16bed4','#d48216','#a1d416','#1649d4'];  
 
 
   const CustomLabel = ({ value, x, y, width, height, index }) => {
@@ -18,7 +18,7 @@ const BarListas = ({ data }) => {
           </text>
         {/* Muestra el porcentaje debajo */}
         <text x={x + width / 2} y={y} fill="#000" dy={16} textAnchor="middle">
-          ({porcentaje})
+          {porcentaje} %
         </text>
       </g>
     );
@@ -42,8 +42,8 @@ const BarListas = ({ data }) => {
           }}
         >
           <CartesianGrid strokeDasharray='3 3' />
-          <XAxis padding={{ left: 100 }} dataKey="num_lista" axisLine={false} tickLine={false}  />
-          <YAxis type="number" domain={[1, 100000]} />
+          <XAxis padding={{ left: 100 }} dataKey="candidato" axisLine={false} tickLine={false}  />
+          <YAxis type="number" />
           <Tooltip />              
           <Bar dataKey='total'  fill='#00009d' label={<CustomLabel />}>
             {data.map((entry, index) => (

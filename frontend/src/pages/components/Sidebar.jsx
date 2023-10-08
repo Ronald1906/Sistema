@@ -3,7 +3,7 @@ import styles from '@/styles/Home.module.css'
 import Navbar from './Navbar'
 import axios from 'axios'
 import Sidemenu from './Sidemenu'
-import {FaUser, FaClipboardList, FaHome, FaThList, FaUsers} from 'react-icons/fa'
+import {FaUser, FaClipboardList, FaHome, FaThList, FaUsers, FaRegCalendarCheck, FaTasks} from 'react-icons/fa'
 import { useRouter } from 'next/router'
 
 const Sidebar = ({children}) => {
@@ -42,13 +42,15 @@ const Sidebar = ({children}) => {
           {id: 3, label:'Zonas', icon: FaClipboardList, link:'/zonas'},
           {id: 4, label:'Candidatos', icon: FaUsers, link:'/candidatos'},
           {id: 5, label:'Reporte', icon: FaThList, link:'/reporte'},
-          {id: 6, label:'Votos', icon: FaThList, link:'/votacion'},
+          {id: 6, label:'Votos', icon: FaRegCalendarCheck, link:'/votacion'},
+          {id: 7, label:'Sufragar', icon: FaTasks, link:'/sufragar'},
           //{id: 5, label:'Revisión', icon: FaThList, link:'/revision_sufragio'},
         ])
         //Si el rol es de supervisor
       }else if(result.data.token.data.id_rol === 'supervisor'){
         setMenuArray([          
-          {id: 1, label:'Sufragar', icon: FaThList, link:'sufragar'}
+          {id: 1, label:'Dashboard', icon: FaHome, link:'/dashboard'},
+          {id: 2, label:'Sufragar', icon: FaRegCalendarCheck, link:'/sufragar'}
         ])
         //Si el rol es de coordinador
       }

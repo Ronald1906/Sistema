@@ -91,9 +91,14 @@ const zonas = () => {
   }
 
   const RegistrarZonas=(e)=>{
+    let token= localStorage.getItem('token_eleccion_2023_app')
     e.preventDefault()
     axios.post(process.env.NEXT_PUBLIC_BACKEND+'controller/add_zona',{
       datos: InpFile
+    },{
+      headers:{
+        token_eleccion_2023_app: token
+      }
     }).then((result)=>{
       CDlgAddZ()
       consulta()
@@ -110,11 +115,11 @@ const zonas = () => {
     <Sidebar>
       <DataTable header={HeaderTable} value={Datos} paginator 
       stripedRows rows={10} >
-        <Column field='zona' header='ZONA' />
-        <Column field='parroquia' header='PARROQUIA' />
-        <Column field='juntas_fem' header='JUNTAS FEM' />
-        <Column field='juntas_mas' header='JUNTAS MAS' />
-        <Column field='total_juntas' header='TOTAL' />
+        <Column field='zona' header='ZONA' alignHeader='center' />
+        <Column field='parroquia' header='PARROQUIA' alignHeader='center' />
+        <Column field='juntas_fem' header='JUNTAS FEM' align='center' />
+        <Column field='juntas_mas' header='JUNTAS MAS' align='center' />
+        <Column field='total_juntas' header='TOTAL' align='center' />
       </DataTable>
       <Dialog visible={DlgAddZ} onHide={CDlgAddZ} header='REGISTRO DE ZONAS' >
         <form className={styles.registros} onSubmit={RegistrarZonas} > 
