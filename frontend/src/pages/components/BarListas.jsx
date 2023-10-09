@@ -2,25 +2,37 @@ import React from 'react'
 import {Bar, BarChart, Cell,CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts'
 
 const BarListas = ({ data }) => {
+  // Verifica si data está presente antes de usarlo
+  if (!data) {
+    return null; // O puedes mostrar un mensaje de error u otra cosa
+  }
 
   const colors = ['#d4c716', '#d48216', '#9516d4', '#0088FE','#3ba000','#006ba0','#d4c716','#9516d4', '#16bed4','#d48216','#a1d416','#1649d4'];  
 
-
   const CustomLabel = ({ value, x, y, width, height, index }) => {
-    const barData = data[index]; // Accede a los datos del elemento correspondiente
-    const porcentaje = barData.porcentaje; // Obtiene el valor del porcentaje desde tus datos
+    const barData = data[index];
     
-    return (
-      <g>
-        {/* Muestra el total (value) */}
+    // Verifica si barData y porcentaje están presentes antes de usarlos
+    if (barData && typeof barData.porcentaje !== 'undefined') {
+      const porcentaje = barData.porcentaje;
+    
+      return (
+        <g>
           <text x={x + width / 2} y={y} fill="#000" dy={-10} textAnchor="middle">
             {value}
           </text>
-        {/* Muestra el porcentaje debajo */}
-        <text x={x + width / 2} y={y} fill="#000" dy={16} textAnchor="middle">
-          {porcentaje} %
-        </text>
-      </g>
+          <text x={x + width / 2} y={y} fill="#000" dy={16} textAnchor="middle">
+            {porcentaje} %
+          </text>
+        </g>
+      );
+    }
+
+    // Si no se pueden obtener los datos, simplemente muestra el valor sin porcentaje
+    return (
+      <text x={x + width / 2} y={y} fill="#000" dy={-10} textAnchor="middle">
+        {value}
+      </text>
     );
   };
   
@@ -28,7 +40,6 @@ const BarListas = ({ data }) => {
     <div>
       <ResponsiveContainer width={"100%"}  aspect={2.5}>
         <BarChart 
-          
           data={data} 
           isAnimationActive={false}
           layout='horizontal'
@@ -53,7 +64,8 @@ const BarListas = ({ data }) => {
         </BarChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }
+
 
 export default BarListas

@@ -21,7 +21,7 @@ const Index = () => {
         router.push('/dashboard')
       }
     })
-  },[])
+  },[router])
 
 
   const IniciarSesion=(e)=>{
@@ -40,7 +40,7 @@ const Index = () => {
         localStorage.setItem('token_eleccion_2023_app',result.data.token)
         router.push('/dashboard')
       }
-    })
+    },[router])
   }
 
   return (

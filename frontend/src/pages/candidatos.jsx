@@ -4,7 +4,7 @@ import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import axios from 'axios'
 
-const candidatos = () => {
+const Candidatos = () => {
   const [Datos, setDatos]= useState([])
 
   useEffect(()=>{
@@ -30,4 +30,4 @@ const candidatos = () => {
   )
 }
 
-export default candidatos
+export default Candidatos

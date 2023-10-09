@@ -12,15 +12,17 @@ const Sidemenu = ({ valor }) => {
   };
 
   useEffect(() => {
-    const currentRoute = valor.menu.find((item) => item.link === router.pathname);
-    if (currentRoute) {
-      setSelectedOption(currentRoute.id);
+    if (valor && valor.menu) {
+      const currentRoute = valor.menu.find((item) => item.link === router.pathname);
+      if (currentRoute) {
+        setSelectedOption(currentRoute.id);
+      }
     }
-  }, [router.pathname, valor.menu]);
+  }, [router.pathname, valor]);
 
   return (
     <div className={styles.MenuOpt}>
-      {valor.menu.map((item) => (
+      {valor && valor.menu && valor.menu.map((item) => (
         <Link key={item.id} href={item.link} style={{textDecoration: 'none'}}>
           <div
             className={`${styles.option} ${selectedOption === item.id ? styles.selected : ''}`}
@@ -38,3 +40,4 @@ const Sidemenu = ({ valor }) => {
 };
 
 export default Sidemenu;
+

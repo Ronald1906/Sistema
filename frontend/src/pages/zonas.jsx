@@ -10,7 +10,7 @@ import Swal from 'sweetalert2'
 import { Column } from 'primereact/column'
 import Sidebar from './components/Sidebar'
 
-const zonas = () => {
+const Zonas = () => {
   const [DlgAddZ, setDlgAddZ]= useState(false)
   const [InpFile, setInpFile]= useState([])
   const [Datos, setDatos]= useState([])
@@ -131,4 +131,4 @@ const zonas = () => {
   )
 }
 
-export default zonas
+export default Zonas

@@ -31,7 +31,7 @@ const PieListas = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-            {data.map((entry, index) => (
+            {data && Array.isArray(data) && data.map((entry, index) => (
               <tr key={`row-${index}`}>
                 <td>{entry.candidato}</td>
                 <td style={{ backgroundColor: COLORS[index % COLORS.length], width: '20px', height: '20px' }}></td>
@@ -54,13 +54,13 @@ const PieListas = ({ data }) => {
             fill="#8884d8"
             dataKey="total"
           >
-            {data.map((entry, index) => (
+            {data && data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
           <Tooltip
             content={({ payload }) => {
-              if (payload && payload.length > 0) {
+              if (payload && Array.isArray(payload) && payload.length > 0) {
                 return (
                   <div style={{ backgroundColor: 'white', padding: '10px', border: '1px solid #ccc' }}>
                     <p>{`${payload[0].payload.candidato}`}</p>
