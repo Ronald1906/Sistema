@@ -541,9 +541,9 @@ router.get('/total_votos', async(req,res)=>{
         let array_candidatos=[]
 
         array_candidatos.push(
-            {candidato: 'VOTOS EN BLANCO', total: 0, porcentaje: 0},
-            {candidato: 'VOTOS NULOS', total: 0, porcentaje: 0},
-            {candidato: 'TOTAL VOTOS', total: 0, porcentaje: 0}
+            {candidato: 'VOTOS EN BLANCO', total: 0, porcentaje: 0, porcentual:''},
+            {candidato: 'VOTOS NULOS', total: 0, porcentaje: 0, porcentual:''},
+            {candidato: 'TOTAL VOTOS', total: 0, porcentaje: 0, porcentual:''},
         )
 
         //Consultamos los candidatos
@@ -554,7 +554,8 @@ router.get('/total_votos', async(req,res)=>{
             array_candidatos.push({
                 candidato: consulta1.rows[i].candidato,
                 total: 0,
-                porcentaje: 0
+                porcentaje: 0, 
+                porcentual:''
             })
         }
 
@@ -581,7 +582,8 @@ router.get('/total_votos', async(req,res)=>{
         
         //Recorremos el array de array candidatos
         for(let i=0; i<array_candidatos.length; i++){
-            array_candidatos[i].porcentaje = ((array_candidatos[i].total * 100)/filtro_total[0].total).toFixed(2)
+            array_candidatos[i].porcentaje = ((array_candidatos[i].total * 100)/filtro_total[0].total).toFixed(1)
+            array_candidatos[i].porcentual = ((array_candidatos[i].total * 100)/filtro_total[0].total).toFixed(1) +' %'
         }
 
         //Excluimos el valor total con un filtro
